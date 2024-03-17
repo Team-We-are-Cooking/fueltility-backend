@@ -1,2 +1,4 @@
 .*.swp
 .vercel
+node_modules
+package-lock.json
