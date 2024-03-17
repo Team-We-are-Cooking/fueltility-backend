@@ -1,4 +1,4 @@
-module github.com/codecoogs/gogo
+module github.com/Team-We-are-Cooking/fueltility-backend
 
 go 1.18
 

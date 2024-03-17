@@ -1,4 +1,4 @@
-package codecoogshttp
+package fueltilityhttp
 
 import (
 	"encoding/json"
@@ -13,13 +13,27 @@ const (
 	ControlOriginHeader = "Access-Control-Allow-Origin"
 )
 
+type Response[T any] struct {
+	Success bool          `json:"success"`
+	Data    []T        `json:"data,omitempty"`
+}
+
+type ErrorResponse struct {
+	Success bool          `json:"success"`
+	Error   *ErrorDetails `json:"error,omitempty"`
+}
+
+type ErrorDetails struct {
+	Message string `json:"message"`
+}
+
 type ResponseWriter struct {
 	W http.ResponseWriter
 }
 
 func (crw *ResponseWriter) SetCors(origin string) {
-	if strings.Contains(origin, "www.codecoogs.com") {
-		crw.W.Header().Set(ControlOriginHeader, "https://codecoogs.com")
+	if strings.Contains(origin, "www.fueltility.com") {
+		crw.W.Header().Set(ControlOriginHeader, "https://fueltility.com")
 	}
 
 	if strings.Contains(origin, "127.0.0.1") {

@@ -1,4 +1,4 @@
-package codecoogssupabase
+package fueltilitysupabase
 
 import (
 	"errors"
