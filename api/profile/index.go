@@ -2,7 +2,6 @@ package fuel_quote
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/Team-We-are-Cooking/fueltility-backend/schema"
@@ -27,8 +26,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	switch method {
 	case "GET":
-		quote_id := r.URL.Query().Get("profile")
-		if quote_id == "" {
+		profile_id := r.URL.Query().Get("profile_id")
+		if profile_id == "" {
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing quote id."},
@@ -37,7 +36,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var data []schema.FuelQuote
-		if _, err := client.From("Fuel Quote").Select("*", "exact", false).Eq("quote_id", quote_id).ExecuteTo(&data); err != nil {
+		if _, err := client.From("User").Select("*", "exact", false).Eq("id", profile_id).ExecuteTo(&data); err != nil {
 			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
