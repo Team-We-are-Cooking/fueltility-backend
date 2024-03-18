@@ -30,7 +30,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		if quote_id == "" {
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing quote id."},
 			})
 			return
 		}
