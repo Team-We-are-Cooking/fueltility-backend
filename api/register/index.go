@@ -29,7 +29,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	switch method {
 	case "POST":
-		var userCreds schema.Credentials
+		var userCreds schema.AuthCredentials
 
 		if err := json.NewDecoder(r.Body).Decode(&userCreds); err != nil {
 			log.Println(err.Error())
@@ -55,7 +55,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 		userCreds.Password = string(hashdPw)
 
-		var createdUser schema.Credentials
+		var createdUser schema.User
 
 		if _, err := client.From("User").Insert(&userCreds, false, "", "", "").Single().ExecuteTo(&createdUser); err != nil{
 			log.Println(err.Error())
@@ -67,10 +67,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var data []schema.Credentials = make([]schema.Credentials, 1)
-		data[0] = schema.Credentials{Username: createdUser.Username,  Email: createdUser.Email}
+		var data []schema.ReturnedCredentials = make([]schema.ReturnedCredentials, 1)
+		data[0] = schema.ReturnedCredentials{ID: createdUser.ID, Username: createdUser.Username,  Email: createdUser.Email}
 		
-		crw.SendJSONResponse(http.StatusAccepted, fueltilityhttp.Response[schema.Credentials]{
+		crw.SendJSONResponse(http.StatusAccepted, fueltilityhttp.Response[schema.ReturnedCredentials]{
 			Success: true,
 			Data: data,
 		})

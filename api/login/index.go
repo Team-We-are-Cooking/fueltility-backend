@@ -31,7 +31,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	switch method {
 	case "POST":
-		var userCreds schema.Credentials
+		var userCreds schema.AuthCredentials
 
 		if err := json.NewDecoder(r.Body).Decode(&userCreds); err != nil {
 			log.Println(err.Error())
@@ -43,8 +43,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		
-		var foundUser schema.Credentials
-		if _, err := client.From("User").Select("*", "", false).Eq("username", userCreds.Username).Single().ExecuteTo(&foundUser); err != nil {
+		var foundUser schema.User
+		if _, err := client.From("User").Select("*", "exact", false).Eq("username", userCreds.Username).Single().ExecuteTo(&foundUser); err != nil {
 			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusUnauthorized, fueltilityhttp.ErrorResponse{
 				Success: false,
@@ -64,10 +64,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var data []schema.Credentials = make([]schema.Credentials, 1)
-		data[0] = schema.Credentials{Username: foundUser.Username,  Email: foundUser.Email}
+		var data []schema.ReturnedCredentials = make([]schema.ReturnedCredentials, 1)
+		data[0] = schema.ReturnedCredentials{ID: foundUser.ID, Username: foundUser.Username,  Email: foundUser.Email}
 		
-		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.Credentials]{
+		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.ReturnedCredentials]{
 			Success: true,
 			Data: data,
 		})
