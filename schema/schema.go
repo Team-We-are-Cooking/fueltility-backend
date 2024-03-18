@@ -1,15 +1,16 @@
 package schema
 
 type User struct {
-	Username  string `json:"username"`
-	Password  string `json:"password,omitempty"`
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Address   string `json:"address"`
-	City      string `json:"city"`
-	State     string `json:"state"`
-	ZipCode   string `json:"zipcode"`
+	Username   string `json:"username,omitempty"`
+	Password   string `json:"password,omitempty"`
+	Email      string `json:"email,omitempty"`
+	FirstName  string `json:"first_name"`
+	LastName   string `json:"last_name"`
+	Address    string `json:"address"`
+	AddressTwo string `json:"address_two"`
+	City       string `json:"city"`
+	State      string `json:"state"`
+	ZipCode    string `json:"zip_code"`
 }
 
 type FuelQuote struct {
