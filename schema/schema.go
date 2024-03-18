@@ -12,6 +12,17 @@ type User struct {
 	ZipCode   string `json:"zipcode"`
 }
 
+type FuelQuote struct {
+	QuoteId          int8    `json:"quote_id"`
+	Username         string  `json:"username"`
+	Interstate       bool    `json:"interstate"`
+	DeliveryAddress  string  `json:"delivery_address"`
+	DeliveryDate     string  `json:"delivery_date"`
+	GallonsRequested int8    `json:"gallons_requested"`
+	SuggestedPrice   float32 `json:"suggested_price"`
+	TotalAmountDue   float32 `json:"total_amount_due"`
+}
+
 type Credentials struct {
 	Username string `json:"username,omitempty"`
 	Email    string `json:"email,omitempty"`
