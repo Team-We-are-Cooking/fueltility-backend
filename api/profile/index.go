@@ -30,7 +30,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		if profile_id == "" {
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing quote id."},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing profile id."},
 			})
 			return
 		}
