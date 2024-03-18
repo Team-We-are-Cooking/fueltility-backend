@@ -28,3 +28,8 @@ type Credentials struct {
 	Email    string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
 }
+
+type PricingModule struct {
+	ProfitMargin float32 `json:"profit_margin"`
+	QuoteId 	int8    `json:"quote_id"`
+}
