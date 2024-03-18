@@ -1,14 +1,14 @@
-package login
+package register
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
 
+	"github.com/Team-We-are-Cooking/fueltility-backend/encrypt"
 	"github.com/Team-We-are-Cooking/fueltility-backend/schema"
 	fueltilityhttp "github.com/Team-We-are-Cooking/fueltility-backend/wrappers/http"
 	fueltilitysupabase "github.com/Team-We-are-Cooking/fueltility-backend/wrappers/supabase"
-	"golang.org/x/crypto/bcrypt"
 )
 
 
@@ -25,8 +25,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			Success: false,
 			Error: &fueltilityhttp.ErrorDetails{Message: "Unable to connect to database."},
 		})
-
-		return
 	}
 
 	switch method {
@@ -42,32 +40,37 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 			return
 		}
-		
-		var foundUser schema.Credentials
-		if _, err := client.From("User").Select("*", "", false).Eq("username", userCreds.Username).Single().ExecuteTo(&foundUser); err != nil {
+
+		hashdPw, err := encrypt.HashPassword(userCreds.Password)
+
+		if err != nil {
 			log.Println(err.Error())
-			crw.SendJSONResponse(http.StatusUnauthorized, fueltilityhttp.ErrorResponse{
+			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error: &fueltilityhttp.ErrorDetails{Message: "Invalid username or password."},
+				Error: &fueltilityhttp.ErrorDetails{Message: "Internal server error."},
 			})
 
 			return
 		}
 
-		if err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(userCreds.Password)); err != nil {
+		userCreds.Password = string(hashdPw)
+
+		var createdUser schema.Credentials
+
+		if _, err := client.From("User").Insert(&userCreds, false, "", "", "").Single().ExecuteTo(&createdUser); err != nil{
 			log.Println(err.Error())
-			crw.SendJSONResponse(http.StatusUnauthorized, fueltilityhttp.ErrorResponse{
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error: &fueltilityhttp.ErrorDetails{Message: "Invalid username or password."},
+				Error: &fueltilityhttp.ErrorDetails{Message: "User already exists."},
 			})
 
 			return
 		}
 
 		var data []schema.Credentials = make([]schema.Credentials, 1)
-		data[0] = schema.Credentials{Username: foundUser.Username,  Email: foundUser.Email}
+		data[0] = schema.Credentials{Username: createdUser.Username,  Email: createdUser.Email}
 		
-		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.Credentials]{
+		crw.SendJSONResponse(http.StatusAccepted, fueltilityhttp.Response[schema.Credentials]{
 			Success: true,
 			Data: data,
 		})
