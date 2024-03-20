@@ -17,15 +17,15 @@ type User struct {
 }
 
 type FuelQuote struct {
-	QuoteId          int8    `json:"quote_id"`
-	Username         string  `json:"username"`
-	Interstate       bool    `json:"interstate"`
-	DeliveryAddress  string  `json:"delivery_address"`
-	DeliveryDate     string  `json:"delivery_date"`
-	GallonsRequested int8    `json:"gallons_requested"`
-	SuggestedPrice   float32 `json:"suggested_price"`
-	TotalAmountDue   float32 `json:"total_amount_due"`
-	CreatedAt        string  `json:"created_at"`
+	QuoteId          int8      `json:"quote_id"`
+	UserId           uuid.UUID `json:"user_id"`
+	Interstate       bool      `json:"interstate"`
+	DeliveryAddress  string    `json:"delivery_address"`
+	DeliveryDate     string    `json:"delivery_date"`
+	GallonsRequested int8      `json:"gallons_requested"`
+	SuggestedPrice   float32   `json:"suggested_price"`
+	TotalAmountDue   float32   `json:"total_amount_due"`
+	CreatedAt        string    `json:"created_at,omitempty"`
 }
 
 type AuthCredentials struct {
