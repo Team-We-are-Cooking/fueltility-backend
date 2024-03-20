@@ -34,7 +34,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var data schema.PricingModule
+		var data []schema.PricingModule
 		if _, err := client.From("Pricing Module").Select("*", "exact", false).Eq("quote_id", quote_id).ExecuteTo(&data); err != nil {
 			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 				Success: false,
@@ -43,9 +43,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.PricingModule]{
-		// 	Success: true,
-		// 	Data:    data,
-		// })
+		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.PricingModule]{
+			Success: true,
+			Data:    data,
+		})
 }
 }
