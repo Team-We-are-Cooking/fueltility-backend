@@ -24,51 +24,72 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch method {
-	case "GET":
-		quote_id := r.URL.Query().Get("quote_id")
-		if quote_id == "" {
+	quote_id := r.URL.Query().Get("quote_id")
+	if quote_id == "" {
+		switch method {
+		case "GET":
+			var data []schema.FuelQuote
+			if _, err := client.From("Fuel Quote").Select("*", "exact", false).ExecuteTo(&data); err != nil {
+				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+					Success: false,
+					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				})
+				return
+			}
+
+			crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
+				Success: true,
+				Data:    data,
+			})
+		case "POST":
+			var userFuelQuoteData schema.FuelQuote
+
+			if err := json.NewDecoder(r.Body).Decode(&userFuelQuoteData); err != nil {
+				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+					Success: false,
+					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				})
+				return
+			}
+
+			if _, _, err := client.From("Fuel Quote").Insert(userFuelQuoteData, false, "", "", "exact").Execute(); err != nil {
+				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+					Success: false,
+					Error:   &fueltilityhttp.ErrorDetails{Message: "Failed to create user: " + err.Error()},
+				})
+				return
+			}
+
+			crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
+				Success: true,
+			})
+		default:
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing quote id."},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "No other method allowed without quote_id."},
 			})
-			return
 		}
+	} else {
+		switch method {
+		case "GET":
+			var data []schema.FuelQuote
+			if _, err := client.From("Fuel Quote").Select("*", "exact", false).Eq("quote_id", quote_id).ExecuteTo(&data); err != nil {
+				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+					Success: false,
+					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				})
+				return
+			}
 
-		var data []schema.FuelQuote
-		if _, err := client.From("Fuel Quote").Select("*", "exact", false).Eq("quote_id", quote_id).ExecuteTo(&data); err != nil {
-			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+			crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
+				Success: true,
+				Data:    data,
+			})
+		default:
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "No other method allowed with quote_id."},
 			})
-			return
 		}
-
-		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
-			Success: true,
-			Data:    data,
-		})
-	case "POST":
-		var userFuelQuoteData schema.FuelQuote
-
-		if err := json.NewDecoder(r.Body).Decode(&userFuelQuoteData); err != nil {
-			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
-				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
-			})
-			return
-		}
-
-		if _, _, err := client.From("Fuel Quote").Insert(userFuelQuoteData, false, "", "", "exact").Execute(); err != nil {
-			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
-				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: "Failed to create user: " + err.Error()},
-			})
-			return
-		}
-
-		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
-			Success: true,
-		})
 	}
 }
