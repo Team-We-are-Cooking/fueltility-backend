@@ -1,7 +1,6 @@
 package pricing_module
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/Team-We-are-Cooking/fueltility-backend/schema"
@@ -44,8 +43,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.PricingModule]{
-			Success: true,
-			Data:    data,
-		})
+		// crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.PricingModule]{
+		// 	Success: true,
+		// 	Data:    data,
+		// })
+}
 }
