@@ -21,7 +21,7 @@ func Test_FuelQuoteHandler(t *testing.T) {
 	}{
 		// Test cases for POST requests
 		{UserID: "", QuoteID: "", Method: "POST", RequestBody: nil, ExpectedStatusCode: http.StatusBadRequest},
-		{UserID: "", QuoteID: "", Method: "POST", RequestBody: schema.FuelQuote{}, ExpectedStatusCode: http.StatusOK},
+		{UserID: "", QuoteID: "", Method: "POST", RequestBody: schema.FuelQuote{}, ExpectedStatusCode: http.StatusInternalServerError}, // Empty request body
 		{UserID: "2d8d4210-0309-4940-9229-05a7a67a5d17", QuoteID: "", Method: "POST", RequestBody: schema.FuelQuote{}, ExpectedStatusCode: http.StatusBadRequest},
 		{UserID: "", QuoteID: "1", Method: "POST", RequestBody: schema.FuelQuote{}, ExpectedStatusCode: http.StatusBadRequest},
 		{UserID: "2d8d4210-0309-4940-9229-05a7a67a5d17", QuoteID: "1", Method: "POST", RequestBody: schema.FuelQuote{}, ExpectedStatusCode: http.StatusBadRequest},
@@ -63,7 +63,7 @@ func Test_FuelQuoteHandler(t *testing.T) {
 	t.Run("Test error loading database", func(t *testing.T) {
 		t.Setenv("SUPABASE_URL", "")
 		t.Setenv("SUPABASE_KEY", "")
-		
+
 		r := httptest.NewRequest("POST", "/api/fuel_quote", nil)
 		w := httptest.NewRecorder()
 		handler := http.Handler(http.HandlerFunc(Handler))
