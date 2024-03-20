@@ -58,7 +58,7 @@ func Test_Pricing_ModuleHandler(t *testing.T) {
 
 		quote_id := "1"
 
-		r := httptest.NewRequest("GET", "/api/fuel_quote?quote_id="+quote_id, nil)
+		r := httptest.NewRequest("GET", "/api/pricing_module?quote_id="+quote_id, nil)
 		w := httptest.NewRecorder()
 		handler := http.Handler(http.HandlerFunc(Handler))
 
