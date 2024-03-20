@@ -25,7 +25,7 @@ func Test_LoginHandler(t *testing.T) {
 		{Username: "testaccount", Email: "asff@gmail.com", Password: "pw", ExpectedStatusCode: 401},
 		{Username: "testaccount", Email: "test@gmail.com", Password: "123", ExpectedStatusCode: 200},
 	}
-	
+
 	if err := godotenv.Load("../../.env"); err != nil {
 		t.Fatalf("Unable to load environment variables: %s", err.Error())
 	}

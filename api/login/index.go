@@ -51,7 +51,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 			return
 		}
-		
+
 		var foundUser schema.User
 
 		if _, err := client.From("User").Select("*", "exact", false).Eq("username", userCreds.Username).Single().ExecuteTo(&foundUser); err != nil {
@@ -76,7 +76,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 		var data []schema.ReturnedCredentials = make([]schema.ReturnedCredentials, 1)
 		data[0] = schema.ReturnedCredentials{ID: foundUser.ID, Username: foundUser.Username,  Email: foundUser.Email}
-		
+
 		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.ReturnedCredentials]{
 			Success: true,
 			Data: data,
