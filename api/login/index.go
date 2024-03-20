@@ -35,15 +35,25 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 		if err := json.NewDecoder(r.Body).Decode(&userCreds); err != nil {
 			log.Println(err.Error())
-			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error: &fueltilityhttp.ErrorDetails{Message: "Internal server error."},
+				Error: &fueltilityhttp.ErrorDetails{Message: "Bad request malformed JSON."},
+			})
+
+			return
+		}
+
+		if userCreds.Username == "" || userCreds.Password == "" || userCreds.Email == "" {
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
+				Success: false,
+				Error: &fueltilityhttp.ErrorDetails{Message: "Missing required fields."},
 			})
 
 			return
 		}
 		
 		var foundUser schema.User
+
 		if _, err := client.From("User").Select("*", "exact", false).Eq("username", userCreds.Username).Single().ExecuteTo(&foundUser); err != nil {
 			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusUnauthorized, fueltilityhttp.ErrorResponse{
