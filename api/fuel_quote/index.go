@@ -25,22 +25,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	quote_id := r.URL.Query().Get("quote_id")
-	if quote_id == "" {
+	user_id := r.URL.Query().Get("user_id")
+	
+	if user_id == "" && quote_id == "" {
 		switch method {
-		case "GET":
-			var data []schema.FuelQuote
-			if _, err := client.From("Fuel Quote").Select("*", "exact", false).ExecuteTo(&data); err != nil {
-				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
-					Success: false,
-					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
-				})
-				return
-			}
-
-			crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
-				Success: true,
-				Data:    data,
-			})
 		case "POST":
 			var userFuelQuoteData schema.FuelQuote
 
@@ -66,10 +54,32 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		default:
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: "No other method allowed without quote_id."},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "No other method allowed without any parameters."},
 			})
 		}
-	} else {
+	} else if user_id != "" {
+		switch method {
+		case "GET":
+			var data []schema.FuelQuote
+			if _, err := client.From("Fuel Quote").Select("*", "exact", false).Eq("user_id", user_id).ExecuteTo(&data); err != nil {
+				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+					Success: false,
+					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				})
+				return
+			}
+
+			crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
+				Success: true,
+				Data:    data,
+			})
+		default:
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
+				Success: false,
+				Error:   &fueltilityhttp.ErrorDetails{Message: "No other method allowed with user_id."},
+			})
+		}
+	} else if quote_id != "" {
 		switch method {
 		case "GET":
 			var data []schema.FuelQuote
