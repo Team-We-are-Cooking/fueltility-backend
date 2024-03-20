@@ -24,6 +24,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			Success: false,
 			Error:   &fueltilityhttp.ErrorDetails{Message: "Unable to connect to database."},
 		})
+
+		return
 	}
 
 	switch method {
@@ -40,7 +42,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if userCreds.Username == "" || userCreds.Email == "" || userCreds.Password == "" {
+		if userCreds.Username == "" || userCreds.Email == "" {
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing required fields."},

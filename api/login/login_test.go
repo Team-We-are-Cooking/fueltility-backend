@@ -21,6 +21,7 @@ func Test_LoginHandler(t *testing.T) {
 		{Username: "", Email: "", Password: "", ExpectedStatusCode: 400},
 		{Username: "testaccount", Email: "", Password: "pw", ExpectedStatusCode: 400},
 		{Username: "testaccount", Email: "test@gmail.com", Password: "", ExpectedStatusCode: 400},
+		{Username: "notindb", Email: "notindb@yahoo.com", Password: "pw", ExpectedStatusCode: 401},
 		{Username: "testaccount", Email: "asff@gmail.com", Password: "pw", ExpectedStatusCode: 401},
 		{Username: "testaccount", Email: "test@gmail.com", Password: "123", ExpectedStatusCode: 200},
 	}
@@ -51,4 +52,16 @@ func Test_LoginHandler(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("Test error loading database", func(t *testing.T) {
+		r := httptest.NewRequest("POST", "/api/login", nil)
+		w := httptest.NewRecorder()
+		handler := http.Handler(http.HandlerFunc(Handler))
+
+		handler.ServeHTTP(w, r)
+
+		if status := w.Code; status != 500 {
+			t.Fatalf("handler returned wrong status code: got %v want %v", status, 500)
+		}
+	})
 }

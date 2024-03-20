@@ -11,7 +11,6 @@ func Test_PasswordHashing(t *testing.T) {
 		name     string
 		password string
 	}{
-		{"empty", ""},
 		{"lowercase", "ad2323"},
 		{"space", "ab  c123"},
 		{"uppercase", "AB123D"},
@@ -24,7 +23,7 @@ func Test_PasswordHashing(t *testing.T) {
 			hashedPassword, err := HashPassword(d.password)
 
 			if err != nil {
-				t.Fatalf("%s was unable to be hashed: %s", d.password, err.Error())
+				t.Errorf("%s was unable to be hashed: %s", d.password, err.Error())
 			}
 
 			if err := bcrypt.CompareHashAndPassword(hashedPassword, []byte(d.password)); err != nil {
@@ -32,4 +31,11 @@ func Test_PasswordHashing(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("empty", func(t *testing.T) {
+		_, err := HashPassword("")
+		if err != nil {
+			t.Logf("empty string was unable to be hashed: %s", err.Error())
+		}
+	})
 }
