@@ -61,6 +61,9 @@ func Test_FuelQuoteHandler(t *testing.T) {
 	}
 
 	t.Run("Test error loading database", func(t *testing.T) {
+		t.Setenv("SUPABASE_URL", "")
+		t.Setenv("SUPABASE_KEY", "")
+		
 		r := httptest.NewRequest("POST", "/api/fuel_quote", nil)
 		w := httptest.NewRecorder()
 		handler := http.Handler(http.HandlerFunc(Handler))
