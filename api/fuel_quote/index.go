@@ -33,7 +33,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			var userFuelQuoteData schema.FuelQuote
 
 			if err := json.NewDecoder(r.Body).Decode(&userFuelQuoteData); err != nil {
-				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+				crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 					Success: false,
 					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
 				})
