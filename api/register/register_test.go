@@ -52,15 +52,30 @@ func Test_RegisterHandler(t *testing.T) {
 		})
 	}
 
-	t.Run("Test error loading database", func(t *testing.T) {
+	t.Run("Test loading database error", func(t *testing.T) {
+		t.Setenv("SUPABASE_URL", "")
+		t.Setenv("SUPABASE_KEY", "")
+
 		r := httptest.NewRequest("POST", "/api/register", nil)
 		w := httptest.NewRecorder()
 		handler := http.Handler(http.HandlerFunc(Handler))
 
 		handler.ServeHTTP(w, r)
 
-		if status := w.Code; status != 500 {
-			t.Fatalf("handler returned wrong status code: got %v want %v", status, 500)
+		if status := w.Code; status != http.StatusInternalServerError {
+			t.Fatalf("handler returned wrong status code: got %v want %v", status, http.StatusInternalServerError)
+		}
+	})
+
+	t.Run("Test no http request body error", func(t *testing.T) {
+		r := httptest.NewRequest("POST", "/api/register", nil)
+		w := httptest.NewRecorder()
+		handler := http.Handler(http.HandlerFunc(Handler))
+
+		handler.ServeHTTP(w, r)
+
+		if status := w.Code; status != http.StatusBadRequest {
+			t.Fatalf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
 		}
 	})
 }
