@@ -59,7 +59,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var userProfile schema.Profile
-
 		if err := json.NewDecoder(r.Body).Decode(&userProfile); err != nil {
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
@@ -69,7 +68,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var updatedUser schema.User
-
 		if _, err := client.From("User").Update(userProfile, "", "exact").Eq("id", user_id).Single().ExecuteTo(&updatedUser); err != nil {
 			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 				Success: false,
@@ -83,7 +81,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.User]{
 			Success: true,
-			Data:   data,
+			Data:    data,
 		})
 	}
 }
