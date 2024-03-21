@@ -1,4 +1,4 @@
-package fuel_quote
+package profile
 
 import (
 	"encoding/json"
@@ -26,31 +26,31 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	switch method {
 	case "GET":
-		profile_id := r.URL.Query().Get("profile_id")
-		if profile_id == "" {
+		user_id := r.URL.Query().Get("user_id")
+		if user_id == "" {
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing profile id."},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing user id."},
 			})
 			return
 		}
 
-		var data []schema.FuelQuote
-		if _, err := client.From("User").Select("*", "exact", false).Eq("id", profile_id).ExecuteTo(&data); err != nil {
+		var data []schema.User
+		if _, err := client.From("User").Select("*", "exact", false).Eq("id", user_id).ExecuteTo(&data); err != nil {
 			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Failed to retrieve user: " + err.Error()},
 			})
 			return
 		}
 
-		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
+		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.User]{
 			Success: true,
 			Data:    data,
 		})
 	case "PUT":
-		profile_id := r.URL.Query().Get("profile_id")
-		if profile_id == "" {
+		user_id := r.URL.Query().Get("user_id")
+		if user_id == "" {
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing profile id."},
@@ -58,17 +58,19 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var userProfile schema.User
+		var userProfile schema.Profile
 
 		if err := json.NewDecoder(r.Body).Decode(&userProfile); err != nil {
-			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
 			})
 			return
 		}
 
-		if _, _, err := client.From("User").Update(userProfile, "", "exact").Eq("id", profile_id).Execute(); err != nil {
+		var updatedUser schema.User
+
+		if _, err := client.From("User").Update(userProfile, "", "exact").Eq("id", user_id).Single().ExecuteTo(&updatedUser); err != nil {
 			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "Failed to update user: " + err.Error()},
@@ -76,8 +78,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		var data []schema.User = make([]schema.User, 1)
+		data[0] = updatedUser
+
 		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.User]{
 			Success: true,
+			Data:   data,
 		})
 	}
 }
