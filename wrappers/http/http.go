@@ -14,8 +14,8 @@ const (
 )
 
 type Response[T any] struct {
-	Success bool          `json:"success"`
-	Data    []T        `json:"data,omitempty"`
+	Success bool `json:"success"`
+	Data    []T  `json:"data,omitempty"`
 }
 
 type ErrorResponse struct {
@@ -37,9 +37,10 @@ func (crw *ResponseWriter) SetCors(origin string) {
 	}
 
 	if strings.Contains(origin, "127.0.0.1") {
-		crw.W.Header().Set(ControlOriginHeader, "http://localhost:3001")
+		crw.W.Header().Set(ControlOriginHeader, "http://localhost:3000")
 	}
 
+	crw.W.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	crw.W.Header().Set("Access-Control-Allow-Methods", "*")
 }
 
