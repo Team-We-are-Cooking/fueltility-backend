@@ -5,7 +5,7 @@ import "github.com/google/uuid"
 type User struct {
 	ID         uuid.UUID `json:"id"`
 	Username   string    `json:"username"`
-	Password   string    `json:"-"`
+	Password   string    `json:"password"`
 	Email      string    `json:"email"`
 	FirstName  string    `json:"first_name"`
 	LastName   string    `json:"last_name"`
@@ -17,17 +17,17 @@ type User struct {
 }
 
 type Profile struct {
-	FirstName  string    `json:"first_name"`
-	LastName   string    `json:"last_name"`
-	Address    string    `json:"address"`
-	AddressTwo string    `json:"address_two"`
-	City       string    `json:"city"`
-	State      string    `json:"state"`
-	ZipCode    string    `json:"zip_code"`
+	FirstName  string `json:"first_name"`
+	LastName   string `json:"last_name"`
+	Address    string `json:"address"`
+	AddressTwo string `json:"address_two"`
+	City       string `json:"city"`
+	State      string `json:"state"`
+	ZipCode    string `json:"zip_code"`
 }
 
 type FuelQuote struct {
-	QuoteId          int8      `json:"quote_id"`
+	QuoteId          int8      `json:"quote_id,omitempty"`
 	UserId           uuid.UUID `json:"user_id"`
 	Interstate       bool      `json:"interstate"`
 	DeliveryAddress  string    `json:"delivery_address"`
@@ -51,11 +51,7 @@ type ReturnedCredentials struct {
 }
 
 type PricingModule struct {
-	QuoteId 	int8    `json:"quote_id"`
-	ProfitMargin float32 `json:"profit_margin"`
+	QuoteId             int8    `json:"quote_id"`
+	ProfitMargin        float32 `json:"profit_margin"`
 	CalculatedTotalCost float32 `json:"calculated_total_cost"`
 }
-
-
-
-
