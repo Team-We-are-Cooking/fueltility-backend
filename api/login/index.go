@@ -11,7 +11,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-
 func Handler(w http.ResponseWriter, r *http.Request) {
 	crw := &fueltilityhttp.ResponseWriter{W: w}
 	crw.SetCors(r.Host)
@@ -23,7 +22,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err.Error())
 		crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 			Success: false,
-			Error: &fueltilityhttp.ErrorDetails{Message: "Unable to connect to database."},
+			Error:   &fueltilityhttp.ErrorDetails{Message: "Unable to connect to database."},
 		})
 
 		return
@@ -37,7 +36,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error: &fueltilityhttp.ErrorDetails{Message: "Bad request malformed JSON."},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Bad request malformed JSON."},
 			})
 
 			return
@@ -46,19 +45,19 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		if userCreds.Username == "" || userCreds.Password == "" || userCreds.Email == "" {
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error: &fueltilityhttp.ErrorDetails{Message: "Missing required fields."},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Missing required fields."},
 			})
 
 			return
 		}
-		
+
 		var foundUser schema.User
 
 		if _, err := client.From("User").Select("*", "exact", false).Eq("username", userCreds.Username).Single().ExecuteTo(&foundUser); err != nil {
 			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusUnauthorized, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error: &fueltilityhttp.ErrorDetails{Message: "Invalid username or password."},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid username or password."},
 			})
 
 			return
@@ -68,18 +67,18 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusUnauthorized, fueltilityhttp.ErrorResponse{
 				Success: false,
-				Error: &fueltilityhttp.ErrorDetails{Message: "Invalid username or password."},
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid username or password!"},
 			})
 
 			return
 		}
 
 		var data []schema.ReturnedCredentials = make([]schema.ReturnedCredentials, 1)
-		data[0] = schema.ReturnedCredentials{ID: foundUser.ID, Username: foundUser.Username,  Email: foundUser.Email}
-		
+		data[0] = schema.ReturnedCredentials{ID: foundUser.ID, Username: foundUser.Username, Email: foundUser.Email}
+
 		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.ReturnedCredentials]{
 			Success: true,
-			Data: data,
+			Data:    data,
 		})
 	}
 }
