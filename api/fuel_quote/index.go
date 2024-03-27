@@ -15,6 +15,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	method := r.Method
 
+	if method == "OPTIONS" {
+		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
+			Success: true,
+		})
+		return
+	}
+
 	client, err := fueltilitysupabase.CreateClient()
 	if err != nil {
 		crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
@@ -26,7 +33,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	quote_id := r.URL.Query().Get("quote_id")
 	user_id := r.URL.Query().Get("user_id")
-	
+
 	if user_id == "" && quote_id == "" {
 		switch method {
 		case "POST":
@@ -49,7 +56,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
-				Success: true,	
+				Success: true,
 			})
 		default:
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
