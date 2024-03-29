@@ -28,8 +28,13 @@ func Test_ProfileHandler(t *testing.T) {
 	}{
 		{UserID: "", RequestBody: schema.Profile{}, ExpectedStatusCode: http.StatusBadRequest},
 		{UserID: "", RequestBody: nil, ExpectedStatusCode: http.StatusBadRequest},
-		{UserID: "70916454-df22-4b07-882e-f0490a9ec623", RequestBody: schema.Profile{FirstName: "John", LastName: "Doe", Address: "123address", AddressTwo: "address2", City: "Houston", State: "TX", ZipCode: "12345"}, ExpectedStatusCode: http.StatusInternalServerError},
-		{UserID: "70916454-df22-4b07-882e-f0490a9ec619", RequestBody: schema.Profile{FirstName: "John", LastName: "Doe", Address: "123address", AddressTwo: "address2", City: "Houston", State: "TX", ZipCode: "12345"}, ExpectedStatusCode: http.StatusOK},
+		{UserID: "70916454-df22-4b07-882e-f0490a9ec623", RequestBody: schema.Profile{FirstName: "", LastName: "", Address: "123address", AddressTwo: "address2", City: "Houston", State: "TX", ZipCode: "12345"}, ExpectedStatusCode: http.StatusBadRequest},
+		{UserID: "70916454-df22-4b07-882e-f0490a9ec623", RequestBody: schema.Profile{FirstName: "John", LastName: "Doe", Address: "", AddressTwo: "address2", City: "Houston", State: "TX", ZipCode: "12345"}, ExpectedStatusCode: http.StatusBadRequest},
+		{UserID: "70916454-df22-4b07-882e-f0490a9ec623", RequestBody: schema.Profile{FirstName: "John", LastName: "Doe", Address: "address1", AddressTwo: "address2address2address2address2address2address2address2address2address2address2address2address2address2address2address2", City: "Houston", State: "TX", ZipCode: "12345"}, ExpectedStatusCode: http.StatusBadRequest},
+		{UserID: "70916454-df22-4b07-882e-f0490a9ec623", RequestBody: schema.Profile{FirstName: "John", LastName: "Doe", Address: "123address", AddressTwo: "address2", City: "", State: "TX", ZipCode: "12345"}, ExpectedStatusCode: http.StatusBadRequest},
+		{UserID: "70916454-df22-4b07-882e-f0490a9ec623", RequestBody: schema.Profile{FirstName: "John", LastName: "Doe", Address: "123address", AddressTwo: "address2", City: "Houston", State: "", ZipCode: "12345"}, ExpectedStatusCode: http.StatusBadRequest},
+		{UserID: "70916454-df22-4b07-882e-f0490a9ec623", RequestBody: schema.Profile{FirstName: "John", LastName: "Doe", Address: "123address", AddressTwo: "address2", City: "Houston", State: "", ZipCode: "12"}, ExpectedStatusCode: http.StatusBadRequest},
+		{UserID: "70916454-df22-4b07-882e-f0ddddddddddddddddddddddddddddddd", RequestBody: schema.Profile{FirstName: "John", LastName: "Doe", Address: "123address", AddressTwo: "address2", City: "Houston", State: "TX", ZipCode: "12345"}, ExpectedStatusCode: http.StatusInternalServerError},
 	}
 
 

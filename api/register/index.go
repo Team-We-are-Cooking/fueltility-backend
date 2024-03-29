@@ -2,7 +2,6 @@ package register
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/Team-We-are-Cooking/fueltility-backend/encrypt"
@@ -19,7 +18,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	client, err := fueltilitysupabase.CreateClient()
 	if err != nil {
-		log.Println(err.Error())
 		crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 			Success: false,
 			Error:   &fueltilityhttp.ErrorDetails{Message: "Unable to connect to database."},
@@ -33,7 +31,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		var userCreds schema.AuthCredentials
 
 		if err := json.NewDecoder(r.Body).Decode(&userCreds); err != nil {
-			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "Bad request malformed JSON."},
@@ -54,7 +51,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		hashdPw, err := encrypt.HashPassword(userCreds.Password)
 
 		if err != nil {
-			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
@@ -68,7 +64,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		var createdUser schema.User
 
 		if _, err := client.From("User").Insert(&userCreds, false, "", "", "").Single().ExecuteTo(&createdUser); err != nil {
-			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusConflict, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "User already exists."},

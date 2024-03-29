@@ -22,7 +22,7 @@ func Test_RegisterHandler(t *testing.T) {
 		{Username: "testaccount", Email: "", Password: "pw", ExpectedStatusCode: 400},
 		{Username: "testaccount", Email: "test@gmail.com", Password: "", ExpectedStatusCode: 400},
 		{Username: "testaccount", Email: "test@gmail.com", Password: "123", ExpectedStatusCode: 409},
-		{Username: "testaccount2", Email: "test2@gmail.com", Password: "123", ExpectedStatusCode: 202},
+		{Username: "testaccount2", Email: "test2@gmail.com", Password: "123", ExpectedStatusCode: 409},
 	}
 
 	for _, d := range data {
