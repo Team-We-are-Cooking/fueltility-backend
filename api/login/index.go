@@ -2,7 +2,6 @@ package login
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/Team-We-are-Cooking/fueltility-backend/schema"
@@ -19,7 +18,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	client, err := fueltilitysupabase.CreateClient()
 	if err != nil {
-		log.Println(err.Error())
 		crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 			Success: false,
 			Error:   &fueltilityhttp.ErrorDetails{Message: "Unable to connect to database."},
@@ -33,7 +31,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		var userCreds schema.AuthCredentials
 
 		if err := json.NewDecoder(r.Body).Decode(&userCreds); err != nil {
-			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "Bad request malformed JSON."},
@@ -54,7 +51,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		var foundUser schema.User
 
 		if _, err := client.From("User").Select("*", "exact", false).Eq("username", userCreds.Username).Single().ExecuteTo(&foundUser); err != nil {
-			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusUnauthorized, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid username or password."},
@@ -64,7 +60,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(userCreds.Password)); err != nil {
-			log.Println(err.Error())
 			crw.SendJSONResponse(http.StatusUnauthorized, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid username or password!"},

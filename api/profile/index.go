@@ -67,6 +67,55 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if len(userProfile.FirstName) + len(userProfile.LastName) == 0 || len(userProfile.FirstName) + len(userProfile.LastName) > 50  {
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
+				Success: false,
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid profile full name length."},
+			})
+			return
+		}
+
+		if userProfile.Address == "" || len(userProfile.Address) > 100 {
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
+				Success: false,
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid profile delivery address 1."},
+			})
+			return
+		}
+
+		if userProfile.AddressTwo != "" && len(userProfile.AddressTwo) > 100  {
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
+				Success: false,
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid profile delivery address 2."},
+			})
+			return
+		}
+
+		if userProfile.City == "" || len(userProfile.City) > 100  {
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
+				Success: false,
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid profile city length"},
+			})
+			return
+		}
+		
+		if len(userProfile.State) != 2  {
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
+				Success: false,
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid profile state length"},
+			})
+			return
+		}
+
+		if len(userProfile.ZipCode) < 5 || len(userProfile.ZipCode) > 9  {
+			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
+				Success: false,
+				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid profile zipcode length"},
+			})
+			return
+		}
+
+		
 		var updatedUser schema.User
 		if _, err := client.From("User").Update(userProfile, "", "exact").Eq("id", user_id).Single().ExecuteTo(&updatedUser); err != nil {
 			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
