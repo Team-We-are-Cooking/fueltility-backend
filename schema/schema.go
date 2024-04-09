@@ -53,5 +53,5 @@ type ReturnedCredentials struct {
 type PricingModule struct {
 	QuoteId             int8    `json:"quote_id"`
 	ProfitMargin        float32 `json:"profit_margin"`
-	CalculatedTotalCost float32 `json:"calculated_total_cost"`
+	// CalculatedTotalCost float32 `json:"calculated_total_cost"`
 }
