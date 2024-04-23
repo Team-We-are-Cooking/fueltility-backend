@@ -32,7 +32,7 @@ type FuelQuote struct {
 	Interstate       bool      `json:"interstate"`
 	DeliveryAddress  string    `json:"delivery_address"`
 	DeliveryDate     string    `json:"delivery_date"`
-	GallonsRequested int8      `json:"gallons_requested"`
+	GallonsRequested float32   `json:"gallons_requested"`
 	SuggestedPrice   float32   `json:"suggested_price"`
 	TotalAmountDue   float32   `json:"total_amount_due"`
 	CreatedAt        string    `json:"created_at,omitempty"`
@@ -53,5 +53,5 @@ type ReturnedCredentials struct {
 type PricingModule struct {
 	QuoteId             int8    `json:"quote_id"`
 	ProfitMargin        float32 `json:"profit_margin"`
-	CalculatedTotalCost float32 `json:"calculated_total_cost"`
+	// CalculatedTotalCost float32 `json:"calculated_total_cost"`
 }
