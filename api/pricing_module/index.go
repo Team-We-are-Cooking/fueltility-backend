@@ -66,13 +66,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			}
 			if fuelQuote.GallonsRequested > 1000 {
 				gallonsRequestedFactor = 0.02
-			}
-			else{
+			} else {
 				gallonsRequestedFactor = 0.03
 			}
 			// Fetch the FuelQuote based on UserID
 			var userFuelQuotes []schema.FuelQuote
-			if _, err := client.From("Fuel Quote").Select("*", "exact", false).Eq("user_id", fuelQuote.UserID).ExecuteTo(&userFuelQuotes); err != nil {
+			if _, err := client.From("Fuel Quote").Select("*", "exact", false).Eq("user_id", fuelQuote.UserId.String()).ExecuteTo(&userFuelQuotes); err != nil {
 				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 					Success: false,
 					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
@@ -88,9 +87,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			// Calculate the margin
 			margin = pricePerGallon * (locationFactor - rateHistoryFactor + gallonsRequestedFactor + companyProfitFactor)
 			// Update the profitMargin in the PricingModule
-			_, err = client.From("Pricing Module").Update(map[string]interface{}{
+			_, _, err = client.From("Pricing Module").Update(map[string]interface{}{
 				"profit_margin": margin,
-			}).Eq("quote_id", quote_id).Execute()
+			}, "", "").Eq("quote_id", quote_id).Execute()
 
 			if err != nil {
 				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
@@ -102,9 +101,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			// Calculate the suggested price per gallon
 			suggested_price_per_gallon := pricePerGallon + margin
 			// Update the suggested_price in the FuelQuote
-			_, err = client.From("Fuel Quote").Update(map[string]interface{}{
+			_, _, err = client.From("Fuel Quote").Update(map[string]interface{}{
 				"suggested_price": suggested_price_per_gallon,
-			}).Eq("quote_id", quote_id).Execute()
+			}, "", "").Eq("quote_id", quote_id).Execute()
 
 			if err != nil {
 				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
@@ -116,9 +115,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			// Calculate the Total Amount Due
 			totalAmountDue := fuelQuote.GallonsRequested * suggested_price_per_gallon
 			// Update the TotalAmountDue in the FuelQuote
-			_, err = client.From("Fuel Quote").Update(map[string]interface{}{
+			_, _, err = client.From("Fuel Quote").Update(map[string]interface{}{
 				"total_amount_due": totalAmountDue,
-			}).Eq("quote_id", quote_id).Execute()
+			}, "", "").Eq("quote_id", quote_id).Execute()
 
 			if err != nil {
 				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
