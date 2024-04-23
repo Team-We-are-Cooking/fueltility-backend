@@ -32,7 +32,7 @@ type FuelQuote struct {
 	Interstate       bool      `json:"interstate"`
 	DeliveryAddress  string    `json:"delivery_address"`
 	DeliveryDate     string    `json:"delivery_date"`
-	GallonsRequested float32   `json:"gallons_requested"`
+	GallonsRequested int32  `json:"gallons_requested"`
 	SuggestedPrice   float32   `json:"suggested_price"`
 	TotalAmountDue   float32   `json:"total_amount_due"`
 	CreatedAt        string    `json:"created_at,omitempty"`

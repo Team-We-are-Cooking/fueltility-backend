@@ -113,7 +113,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			// Calculate the Total Amount Due
-			totalAmountDue := fuelQuote.GallonsRequested * suggested_price_per_gallon
+			totalAmountDue := float32(fuelQuote.GallonsRequested) * suggested_price_per_gallon
 			// Update the TotalAmountDue in the FuelQuote
 			_, _, err = client.From("Fuel Quote").Update(map[string]interface{}{
 				"total_amount_due": totalAmountDue,
