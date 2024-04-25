@@ -2,7 +2,7 @@ package pricing_module
 
 import (
 	"net/http"
-
+	"strconv"
 	"github.com/Team-We-are-Cooking/fueltility-backend/schema"
 	fueltilityhttp "github.com/Team-We-are-Cooking/fueltility-backend/wrappers/http"
 	fueltilitysupabase "github.com/Team-We-are-Cooking/fueltility-backend/wrappers/supabase"
@@ -43,8 +43,28 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// If no data is found, insert the event
+		int_quote_id, _ := strconv.Atoi(quote_id)
+		if len(data) == 0 {
+			if _, _, err := client.From("Pricing Module").Insert(schema.PricingModule{QuoteId:int8(int_quote_id)}, false, "", "", "exact").Execute(); err != nil {
+				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+					Success: false,
+					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				})
+				return
+			}
+
+			if _, err := client.From("Pricing Module").Select("*", "exact", false).Eq("quote_id", quote_id).ExecuteTo(&data); err != nil {
+				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+					Success: false,
+					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				})
+				return
+			}
+		}
+
 		//Fetch the FuelQuote based on quoteID
-		var fuelQuote schema.FuelQuote
+		var fuelQuote []schema.FuelQuote
 		if _, err := client.From("Fuel Quote").Select("*", "exact", false).Eq("quote_id", quote_id).ExecuteTo(&fuelQuote); err != nil {
 			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 				Success: false,
@@ -53,25 +73,25 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		    // Calculate the suggest price and total amount due for each fuel quote
-			var pricePerGallon float32 = 1.50
+			const pricePerGallon float32 = 1.50
 			var margin float32
 			var locationFactor float32
 			var rateHistoryFactor float32
 			var gallonsRequestedFactor float32
 			var companyProfitFactor float32 = 0.1
-			if fuelQuote.Interstate {
+			if fuelQuote[0].Interstate {
 				locationFactor = 0.04
 			} else {
 				locationFactor = 0.02
 			}
-			if fuelQuote.GallonsRequested > 1000 {
+			if fuelQuote[0].GallonsRequested > 1000 {
 				gallonsRequestedFactor = 0.02
 			} else {
 				gallonsRequestedFactor = 0.03
 			}
 			// Fetch the FuelQuote based on UserID
 			var userFuelQuotes []schema.FuelQuote
-			if _, err := client.From("Fuel Quote").Select("*", "exact", false).Eq("user_id", fuelQuote.UserId.String()).ExecuteTo(&userFuelQuotes); err != nil {
+			if _, err := client.From("Fuel Quote").Select("*", "exact", false).Eq("user_id", fuelQuote[0].UserId.String()).ExecuteTo(&userFuelQuotes); err != nil {
 				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 					Success: false,
 					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
@@ -113,7 +133,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			// Calculate the Total Amount Due
-			totalAmountDue := float32(fuelQuote.GallonsRequested) * suggested_price_per_gallon
+			totalAmountDue := float32(fuelQuote[0].GallonsRequested) * suggested_price_per_gallon
 			// Update the TotalAmountDue in the FuelQuote
 			_, _, err = client.From("Fuel Quote").Update(map[string]interface{}{
 				"total_amount_due": totalAmountDue,
