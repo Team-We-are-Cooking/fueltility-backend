@@ -28,9 +28,15 @@ func main() {
 	mux.Handle("/api/profile", http.HandlerFunc(profile.Handler))
 	mux.Handle("/api/register", http.HandlerFunc(register.Handler))
 
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete},
+		AllowCredentials: true,
+	})
+
 	s := &http.Server{
 		Addr:           ":8080",
-		Handler:        cors.Default().Handler(mux),
+		Handler:        c.Handler(mux),
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,

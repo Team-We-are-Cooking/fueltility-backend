@@ -35,7 +35,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var data []schema.User
+		var data []schema.Profile
 		if _, err := client.From("User").Select("*", "exact", false).Eq("id", user_id).ExecuteTo(&data); err != nil {
 			crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 				Success: false,
@@ -44,7 +44,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.User]{
+		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.Profile]{
 			Success: true,
 			Data:    data,
 		})
@@ -95,14 +95,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
 				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid profile city length"},
-			})
-			return
-		}
-		
-		if len(userProfile.State) != 2  {
-			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
-				Success: false,
-				Error:   &fueltilityhttp.ErrorDetails{Message: "Invalid profile state length"},
 			})
 			return
 		}
