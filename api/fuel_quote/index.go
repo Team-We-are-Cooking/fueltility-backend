@@ -76,7 +76,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
+			crw.SendJSONResponse(http.StatusAccepted, fueltilityhttp.Response[schema.FuelQuote]{
 				Success: true,
 				Data:    data,
 			})

@@ -15,7 +15,7 @@ const (
 
 type Response[T any] struct {
 	Success bool `json:"success"`
-	Data    []T  `json:"data,omitempty"`
+	Data    []T  `json:"data"`
 }
 
 type ErrorResponse struct {
