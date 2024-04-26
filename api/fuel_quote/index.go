@@ -46,8 +46,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				})
 				return
 			}
-
-			if _, _, err := client.From("Fuel Quote").Insert(userFuelQuoteData, false, "", "", "exact").Execute(); err != nil {
+			
+			temp, _, err := client.From("Fuel Quote").Insert(userFuelQuoteData, false, "", "", "exact").Execute(); 
+			if err != nil {
 				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
 					Success: false,
 					Error:   &fueltilityhttp.ErrorDetails{Message: "Failed to create user: " + err.Error()},
@@ -55,9 +56,20 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			var fuelQuote []schema.FuelQuote
+			err = json.Unmarshal(temp, &fuelQuote)
+			if err != nil {
+				crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
+					Success: false,
+					Error:   &fueltilityhttp.ErrorDetails{Message: err.Error()},
+				})
+				return
+			}
+
 			crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
 				Success: true,
-			})
+				Data: fuelQuote,
+			})			
 		default:
 			crw.SendJSONResponse(http.StatusBadRequest, fueltilityhttp.ErrorResponse{
 				Success: false,
