@@ -9,56 +9,44 @@ import (
 )
 
 func Test_Pricing_ModuleHandler(t *testing.T) {
-	t.Run("Test pricing_module api route", func(t *testing.T) {
-		// Load environment variables from .env file
-		if err := godotenv.Load("../../.env"); err != nil {
-			t.Fatalf("Unable to load environment variables: %s", err.Error())
-		}
 
-		quote_id := "1"
+	data := []struct {
+		QuoteID            string
+		Method             string
+		ExpectedStatusCode int
+	}{
+		// Test cases for GET requests
+		{QuoteID: "", Method: "GET", ExpectedStatusCode: http.StatusBadRequest}, // missing quote id
+		{QuoteID: "wrongID", Method: "GET", ExpectedStatusCode: http.StatusInternalServerError}, // wrong type of quote id
+		{QuoteID: "4", Method: "GET", ExpectedStatusCode: http.StatusOK}, // wrong type of quote id
 
-		req := httptest.NewRequest("GET", "/api/pricing_module?quote_id="+quote_id, nil)
+	}
 
-		w := httptest.NewRecorder()
-		handler := http.Handler(http.HandlerFunc(Handler))
+	if err := godotenv.Load("../../.env"); err != nil {
+		t.Fatalf("Unable to load environment variables: %s", err.Error())
+	}
 
-		handler.ServeHTTP(w, req)
+	for _, d := range data {
+		t.Run("Test fuel quote handler", func(t *testing.T) {
 
-		if status := w.Code; status != http.StatusOK {
-			t.Errorf("handler returned wrong status code: got %v want %v",
-				status, http.StatusOK)
-		}
+			r := httptest.NewRequest(d.Method, "/api/fuel_quote?quote_id="+d.QuoteID, nil)
+			r.Header.Set("Content-Type", "application/json")
 
-	})
+			w := httptest.NewRecorder()
+			handler := http.HandlerFunc(Handler)
+			handler.ServeHTTP(w, r)
 
-	t.Run("Test pricing_module api route missing query error", func(t *testing.T) {
-		// Load environment variables from .env file
-		if err := godotenv.Load("../../.env"); err != nil {
-			t.Fatalf("Unable to load environment variables: %s", err.Error())
-		}
-
-		quote_id := ""
-
-		req := httptest.NewRequest("GET", "/api/pricing_module?quote_id="+quote_id, nil)
-
-		w := httptest.NewRecorder()
-		handler := http.Handler(http.HandlerFunc(Handler))
-
-		handler.ServeHTTP(w, req)
-
-		if status := w.Code; status != http.StatusBadRequest {
-			t.Errorf("handler returned wrong status code: got %v want %v",
-				status, http.StatusBadRequest)
-		}
-	})
+			if status := w.Code; status != d.ExpectedStatusCode {
+				t.Errorf("handler returned wrong status code: got %v want %v", status, d.ExpectedStatusCode)
+			}
+		})
+	}
 
 	t.Run("Test error loading database", func(t *testing.T) {
 		t.Setenv("SUPABASE_URL", "")
 		t.Setenv("SUPABASE_KEY", "")
 
-		quote_id := "1"
-
-		r := httptest.NewRequest("GET", "/api/pricing_module?quote_id="+quote_id, nil)
+		r := httptest.NewRequest("POST", "/api/fuel_quote", nil)
 		w := httptest.NewRecorder()
 		handler := http.Handler(http.HandlerFunc(Handler))
 
@@ -68,5 +56,4 @@ func Test_Pricing_ModuleHandler(t *testing.T) {
 			t.Fatalf("handler returned wrong status code: got %v want %v", status, 500)
 		}
 	})
-
 }
