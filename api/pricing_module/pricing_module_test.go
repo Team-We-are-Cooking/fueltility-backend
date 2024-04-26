@@ -68,5 +68,28 @@ func Test_Pricing_ModuleHandler(t *testing.T) {
 			t.Fatalf("handler returned wrong status code: got %v want %v", status, 500)
 		}
 	})
+	t.Run("Test pricing_module api route with non-existent quote_id", func(t *testing.T) {
+		// Load environment variables from .env file
+		if err := godotenv.Load("../../.env"); err != nil {
+			t.Fatalf("Unable to load environment variables: %s", err.Error())
+		}
+
+		// Use a quote_id that does not exist in the database
+		quote_id := "9"
+
+		req := httptest.NewRequest("GET", "/api/pricing_module?quote_id="+quote_id, nil)
+
+		w := httptest.NewRecorder()
+		handler := http.Handler(http.HandlerFunc(Handler))
+
+		handler.ServeHTTP(w, req)
+
+		if status := w.Code; status != http.StatusInternalServerError {
+			t.Errorf("handler returned wrong status code: got %v want %v",
+				status, http.StatusInternalServerError)
+		}
+	})
+
+
 
 }
