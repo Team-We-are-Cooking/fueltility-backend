@@ -16,9 +16,9 @@ func Test_Pricing_ModuleHandler(t *testing.T) {
 		ExpectedStatusCode int
 	}{
 		// Test cases for GET requests
-		{QuoteID: "", Method: "GET", ExpectedStatusCode: http.StatusBadRequest}, // missing quote id
+		{QuoteID: "", Method: "GET", ExpectedStatusCode: http.StatusBadRequest},                 // missing quote id
 		{QuoteID: "wrongID", Method: "GET", ExpectedStatusCode: http.StatusInternalServerError}, // wrong type of quote id
-		{QuoteID: "4", Method: "GET", ExpectedStatusCode: http.StatusOK}, // wrong type of quote id
+		{QuoteID: "4", Method: "GET", ExpectedStatusCode: http.StatusOK},                        // wrong type of quote id
 
 	}
 
