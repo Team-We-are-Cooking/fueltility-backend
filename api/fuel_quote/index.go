@@ -15,13 +15,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	method := r.Method
 
-	if method == "OPTIONS" {
-		crw.SendJSONResponse(http.StatusOK, fueltilityhttp.Response[schema.FuelQuote]{
-			Success: true,
-		})
-		return
-	}
-
 	client, err := fueltilitysupabase.CreateClient()
 	if err != nil {
 		crw.SendJSONResponse(http.StatusInternalServerError, fueltilityhttp.ErrorResponse{
