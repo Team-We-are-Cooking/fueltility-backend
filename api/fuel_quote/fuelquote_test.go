@@ -30,6 +30,9 @@ func Test_FuelQuoteHandler(t *testing.T) {
 		{UserID: "", QuoteID: "", Method: "GET", RequestBody: nil, ExpectedStatusCode: http.StatusBadRequest},
 		{UserID: "2d8d4210-0309-4940-9229-05a7a67a5d17", QuoteID: "", Method: "GET", RequestBody: nil, ExpectedStatusCode: http.StatusOK},
 		{UserID: "", QuoteID: "1", Method: "GET", RequestBody: nil, ExpectedStatusCode: http.StatusOK},
+		{UserID: "wrongID", QuoteID: "", Method: "GET", RequestBody: nil, ExpectedStatusCode: http.StatusInternalServerError}, 
+		{UserID: "", QuoteID: "wrongID", Method: "GET", RequestBody: nil, ExpectedStatusCode: http.StatusInternalServerError}, 
+
 	}
 
 	if err := godotenv.Load("../../.env"); err != nil {
